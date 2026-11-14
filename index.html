@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10264a">
+<title>Kas Agen BRILink — Prototype</title>
+<style>
+:root{
+  --navy:#17345f;--navy2:#244b7c;--blue:#3978d7;--gold:#f4c84a;
+  --bg:#f3f6fc;--white:#fff;--text:#172b49;--muted:#718096;
+  --line:#e5eaf2;--green:#159957;--red:#dc4545;--shadow:0 8px 24px rgba(20,43,79,.08);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.sidebar{position:fixed;inset:0 auto 0 0;width:252px;background:linear-gradient(180deg,#fbfdff 0%,#f1f6fd 100%);color:#203754;padding:20px 15px;display:flex;flex-direction:column;z-index:30;overflow:auto;border-right:1px solid #e4ebf5;box-shadow:5px 0 24px rgba(30,63,105,.045)}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 8px 20px;border-bottom:1px solid #e6edf6}
+.brand-mark{width:43px;height:43px;border-radius:14px;background:linear-gradient(145deg,#f7d875,#eab83c);display:grid;place-items:center;color:#17345f;font-size:23px;font-weight:900;box-shadow:0 5px 12px rgba(226,177,52,.2)}
+.brand strong{font-size:16px;letter-spacing:-.2px;color:#19385f}.brand small{display:block;color:#8795a9;font-size:10px;margin-top:3px}
+.nav-label{font-size:10px;letter-spacing:1.25px;color:#9aa8ba;margin:20px 10px 9px;font-weight:850}
+.nav{display:grid;gap:5px}
+.nav button{width:100%;border:1px solid transparent;background:transparent;color:#53657e;text-align:left;padding:8px 10px;border-radius:12px;display:flex;align-items:center;gap:11px;font-size:12.5px;font-weight:650;transition:background .2s ease,color .2s ease,border-color .2s ease,transform .2s ease}
+.nav button:hover{background:#fff;color:#244b7c;border-color:#e8eef7;transform:translateX(2px)}
+.nav button.active{background:linear-gradient(100deg,#e8f1ff,#f2f7ff);color:#1f5598;border-color:#d8e7fb;box-shadow:0 4px 12px rgba(56,112,190,.08)}
+.nav .ico{width:32px;height:32px;flex:0 0 32px;border-radius:10px;display:grid;place-items:center;text-align:center;font-size:16px;background:var(--ico-bg,#eaf1fb);color:var(--ico-color,#3978d7);transition:transform .2s ease}
+.nav button:hover .ico{transform:scale(1.06)}
+.nav button:nth-child(1){--ico-bg:#e8f0ff;--ico-color:#3978d7}.nav button:nth-child(2){--ico-bg:#e5f6ef;--ico-color:#159568}.nav button:nth-child(3){--ico-bg:#fff1df;--ico-color:#d88922}.nav button:nth-child(4){--ico-bg:#f1eaff;--ico-color:#8b5bd6}.nav button:nth-child(5){--ico-bg:#ffecef;--ico-color:#d65b78}.nav button:nth-child(6){--ico-bg:#e7f5fa;--ico-color:#2993b3}.nav button:nth-child(7){--ico-bg:#e9edff;--ico-color:#596bd0}.nav button:nth-child(8){--ico-bg:#fff5d9;--ico-color:#bd8b18}.nav button:nth-child(9){--ico-bg:#e9f7e9;--ico-color:#4a9b54}.nav button:nth-child(10){--ico-bg:#edf0f5;--ico-color:#64748b}.nav button:nth-child(11){--ico-bg:#e8f3ff;--ico-color:#347dbb}.nav button:nth-child(12){--ico-bg:#f0edf9;--ico-color:#7965ad}
+.sidebar-bottom{margin-top:auto;padding-top:16px}
+.admin-chip{background:#fff;border:1px solid #e5ecf5;border-radius:14px;padding:11px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(30,63,105,.04)}
+.avatar{width:36px;height:36px;border-radius:12px;background:linear-gradient(145deg,#ffe38a,#efc34b);color:#17345f;display:grid;place-items:center;font-weight:900}
+.admin-chip small{display:block;color:#8795a9;font-size:11px;margin-top:2px}
+.online{color:#159957;font-size:10px;margin-left:auto}
+.main{margin-left:252px;min-height:100vh}
+.topbar{height:78px;background:rgba(255,255,255,.92);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 28px;position:sticky;top:0;z-index:20;backdrop-filter:blur(12px)}
+.menu-toggle{display:none;border:0;background:#eef3fb;border-radius:10px;padding:9px 11px;font-size:20px}
+.page-heading{min-width:210px}.page-heading strong{font-size:16px}.page-heading small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.search{margin-left:auto;max-width:420px;flex:1;position:relative}
+.search input{width:100%;border:1px solid var(--line);border-radius:12px;background:#f8faff;padding:11px 14px 11px 38px;outline:none;font-size:12px}
+.search span{position:absolute;left:13px;top:9px;color:#718096}
+.top-actions{display:flex;align-items:center;gap:13px;font-size:13px}
+.icon-btn{border:1px solid var(--line);background:#fff;border-radius:11px;width:38px;height:38px;display:grid;place-items:center}
+.content{padding:25px 28px 40px;max-width:1700px;margin:auto}
+.page{display:none;animation:fade .22s ease}.page.active{display:block}
+@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+.page-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px}
+.page-title h1{font-size:22px;margin:0 0 5px;letter-spacing:-.4px}.page-title p{margin:0;color:var(--muted);font-size:12px}
+.btn{border:0;border-radius:10px;padding:10px 15px;font-size:12px;font-weight:750;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:linear-gradient(110deg,#173966,#24569a);color:white;box-shadow:0 5px 12px rgba(26,68,123,.16)}
+.btn-gold{background:linear-gradient(110deg,#ffe17a,#efbd39);color:#192b49}
+.btn-light{background:#eef3fa;color:#29415f;border:1px solid #e1e8f2}
+.btn-danger{background:#fff0f0;color:#c93636}
+.grid{display:grid;gap:15px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}
+.saldo-stats{gap:11px;margin-bottom:14px}
+.saldo-stats .stat{min-height:88px;padding:13px 15px;border-radius:13px}
+.saldo-stats .stat .label{font-size:10px}
+.saldo-stats .stat .value{font-size:19px;margin:7px 0 3px}
+.saldo-stats .stat small{font-size:9px}
+.stat{background:linear-gradient(140deg,#142d55,#1c477e);color:#fff;border-radius:15px;padding:17px;box-shadow:var(--shadow);min-height:112px;position:relative;overflow:hidden}
+.stat:after{content:"";position:absolute;width:110px;height:110px;border:1px solid rgba(255,255,255,.08);border-radius:50%;right:-25px;top:-40px}
+.stat .label{font-size:11px;color:#d0dced}.stat .value{font-size:22px;font-weight:850;margin:10px 0 6px;letter-spacing:-.4px}.stat small{font-size:10px;color:#c3d2e7}
+.stat .sicon{float:right;font-size:21px;color:#ffdc6b}
+.panel{background:#fff;border:1px solid #e8edf5;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);min-width:0}
+.panel h3{font-size:14px;margin:0 0 14px}.panel-sub{font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:14px}
+.dashboard-grid{grid-template-columns:minmax(0,1.55fr) minmax(270px,.85fr)}
+.two-col{grid-template-columns:minmax(0,1fr) minmax(300px,.85fr)}
+.three-col{grid-template-columns:repeat(3,minmax(0,1fr))}
+.account-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.account{border:1px solid var(--line);border-radius:13px;padding:14px;background:linear-gradient(145deg,#fff,#f7f9fd)}
+.account .name{font-size:11px;color:var(--muted);font-weight:700}.account .amount{font-size:17px;font-weight:850;margin:8px 0 4px;color:#19375f}.account small{font-size:10px;color:#8996a8}
+/* Kontrol privasi nominal total saldo */
+.balance-value-row{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative;z-index:1}
+.balance-visibility-btn{flex:0 0 30px;width:30px;height:30px;display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.24);border-radius:9px;background:rgba(255,255,255,.10);color:#fff;padding:0;transition:background .18s ease,border-color .18s ease}
+.balance-visibility-btn:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.42)}
+.balance-visibility-btn:focus-visible{outline:2px solid #ffdf70;outline-offset:2px}
+.balance-value-row #balanceTotalValue{min-width:0;overflow-wrap:anywhere}
+/* Frosted-glass cards khusus daftar saldo pada halaman Saldo & Rekening */
+#balanceAccounts .account{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,255,255,.76),rgba(235,243,255,.48));
+  border:1px solid rgba(255,255,255,.92);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 8px 20px rgba(31,67,117,.07);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+#balanceAccounts .account:before{
+  content:"";position:absolute;inset:0 auto 0 0;width:3px;
+  background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(91,143,208,.42));
+}
+#balanceAccounts .account:hover{
+  transform:translateY(-2px);
+  border-color:rgba(255,255,255,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 12px 24px rgba(31,67,117,.12);
+}
+#balanceAccounts .account .name{color:#58708f;letter-spacing:.25px}
+#balanceAccounts .account .amount{color:#15365f}
+#balanceAccounts .account small{color:#7b8da5}
+/* Modal input saldo awal */
+.modal-backdrop{display:none;position:fixed;inset:0;z-index:80;padding:18px;align-items:center;justify-content:center;background:rgba(8,20,40,.48);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.modal-backdrop.show{display:flex}
+.modal-card{width:min(680px,100%);max-height:min(88vh,800px);overflow:auto;background:rgba(255,255,255,.97);border:1px solid rgba(255,255,255,.9);border-radius:20px;padding:22px;box-shadow:0 24px 70px rgba(8,24,50,.28);animation:fade .18s ease}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.modal-head h2{font-size:19px;margin:0 0 5px;color:#17243b}
+.modal-head p{font-size:11px;line-height:1.6;color:#718096;margin:0}
+.modal-close{flex:0 0 34px;width:34px;height:34px;border:1px solid #e5eaf2;border-radius:10px;background:#f8faff;color:#40536e;font-size:19px;line-height:1}
+.modal-card .notice{margin:14px 0}
+.modal-card #openingBalanceFields{gap:11px}
+.modal-card #openingBalanceFields .field{padding:11px;border:1px solid #e7edf6;border-radius:12px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(241,246,253,.8))}
+.modal-card #openingBalanceFields .field input{background:rgba(255,255,255,.88)}
+@media(max-width:760px){.modal-backdrop{padding:10px}.modal-card{padding:16px;border-radius:16px;max-height:92vh}.saldo-stats .stat{min-height:82px;padding:11px}.saldo-stats .stat .value{font-size:17px}}
+/* Simulasi penutupan kas untuk hari berikutnya */
+.session-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.session-heading .btn{margin-top:2px}
+.simulation-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.simulation-date-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 12px;padding:10px 12px;border:1px solid #e5ecf6;border-radius:11px;background:#f8faff;font-size:11px}
+.simulation-inputs{margin-bottom:15px}
+.simulation-results{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.simulation-result{min-width:0;padding:13px;border-radius:12px;border:1px solid rgba(223,232,245,.95);background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(240,246,255,.82));display:flex;flex-direction:column;gap:6px}
+.simulation-result small{font-size:10px;color:#6d7e95;font-weight:700}
+.simulation-result b{font-size:17px;color:#19375f;overflow-wrap:anywhere}
+.simulation-result span{font-size:9px;color:#8391a5;line-height:1.4}
+.simulation-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:13px;font-size:11px}
+.simulation-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.simulation-save-status{font-size:10px;color:#16804a;font-weight:750}
+.simulation-save-status:empty{display:none}
+.simulation-error{margin:0 0 12px;background:#fff4f4;border-color:#f4d5d5;color:#ad3434}
+@media(max-width:1000px){.simulation-results{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.session-heading .btn{width:100%;justify-content:center}.simulation-results{grid-template-columns:1fr 1fr}.simulation-result{padding:11px}.simulation-result b{font-size:15px}}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.quick{border:1px solid var(--line);border-radius:12px;padding:12px 5px;text-align:center;background:#fbfcff;color:#29415f;font-size:10px;font-weight:700}
+.quick b{display:block;font-size:22px;margin-bottom:6px;color:#2360b4}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:750;color:#43536a}
+.field input,.field select,.field textarea{width:100%;border:1px solid #dfe6f0;border-radius:10px;background:#fbfcff;padding:10px 11px;font-size:12px;color:#24364f;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#6b99df;box-shadow:0 0 0 3px rgba(59,130,246,.09)}
+.field textarea{min-height:70px;resize:vertical}
+.money-input{font-variant-numeric:tabular-nums}
+.money-input::placeholder{color:#a0aabc}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:15px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:11px}
+.session-table td,.session-table th{padding:13px 12px}
+.session-table tbody tr:first-child td{font-weight:700}
+.session-table .difference-cell{font-weight:800}
+th{background:#f5f7fb;color:#68778c;text-align:left;font-size:10px;letter-spacing:.25px;padding:12px 11px}
+td{padding:12px 11px;border-top:1px solid #edf0f5;color:#34445b}
+tr:hover td{background:#fbfcff}
+.pill{display:inline-block;border-radius:30px;padding:4px 8px;font-size:9px;font-weight:800;background:#e9f8ef;color:#16804a}
+.pill.warn{background:#fff5dc;color:#9b6b00}.pill.red{background:#ffeded;color:#c13b3b}.pill.blue{background:#eaf2ff;color:#2459a5}
+.muted{color:var(--muted)}.positive{color:var(--green);font-weight:800}.negative{color:var(--red);font-weight:800}
+.section-gap{margin-top:16px}.toolbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:13px}
+.toolbar input,.toolbar select{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 10px;font-size:11px}
+.chart{height:175px;display:flex;align-items:end;gap:13px;padding:15px 8px 0;border-bottom:1px solid var(--line)}
+.bar-col{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px}
+.bar{width:min(28px,70%);border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#5c9cf3,#204b86)}
+.bar-col small{font-size:9px;color:#8793a4}
+.alert-card{border:1px solid #f4d58b;background:#fff9e9;color:#815b13;border-radius:12px;padding:12px 14px;font-size:11px;line-height:1.6}.alert-card.danger{border-color:#f2b7b7;background:#fff1f1;color:#a53636}.notice{padding:12px 14px;border-radius:11px;background:#f2f7ff;color:#42618c;font-size:11px;line-height:1.6;border:1px solid #e1ebfb}
+.empty{padding:24px;text-align:center;color:#8a97a9;font-size:12px}
+.mobile-overlay{display:none}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)}.account-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid,.two-col{grid-template-columns:1fr}}
+@media(max-width:760px){
+ .sidebar{transform:translateX(-100%);transition:.25s;width:270px}.sidebar.open{transform:translateX(0)}
+ .mobile-overlay.show{display:block;position:fixed;inset:0;background:rgba(5,15,30,.48);z-index:25}
+ .main{margin-left:0}.topbar{height:65px;padding:0 14px;gap:10px}.menu-toggle{display:block}
+ .page-heading{min-width:0}.page-heading strong{font-size:13px}.page-heading small{display:none}
+ .search{display:none}.top-actions{margin-left:auto}.top-actions .admin-label{display:none}
+ .content{padding:18px 13px 30px}.page-title h1{font-size:19px}.page-title{align-items:center}
+ .stats{gap:9px}.stat{padding:13px;min-height:100px}.stat .value{font-size:17px}
+ .account-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
+ .quick-grid{grid-template-columns:repeat(4,1fr)}
+ .panel{padding:14px}.three-col{grid-template-columns:1fr}
+}
+@media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.stat .value{font-size:15px}.quick{font-size:9px}.quick b{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brand-mark">B</div><div><strong>BRILink Kas Agen</strong><small>Financial Management</small></div></div>
+    <div class="nav-label">MENU UTAMA</div>
+    <nav class="nav" id="navigation">
+      <button class="active" data-page="dashboard"><span class="ico">▦</span>Dashboard</button>
+      <button data-page="saldo"><span class="ico">▣</span>Saldo & Rekening</button>
+      <button data-page="transaksi"><span class="ico">⇄</span>Transaksi Agen</button>
+      <button data-page="titipan"><span class="ico">◉</span>Saldo Titipan</button>
+      <button data-page="hutang"><span class="ico">♙</span>Hutang Pelanggan</button>
+      <button data-page="operasional"><span class="ico">▤</span>Operasional</button>
+      <button data-page="pindah"><span class="ico">⇆</span>Pindah Saldo</button>
+      <button data-page="fee"><span class="ico">◈</span>Fee & Komisi</button>
+      <button data-page="warung"><span class="ico">▧</span>Warung</button>
+      <button data-page="riwayat"><span class="ico">◷</span>Riwayat Transaksi</button>
+      <button data-page="laporan"><span class="ico">▥</span>Laporan</button>
+      <button data-page="pengaturan"><span class="ico">⚙</span>Pengaturan</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="admin-chip"><div class="avatar">A</div><div><b style="font-size:12px">Admin</b><small>Agen BRILink</small></div><span class="online">● Online</span></div></div>
+  </aside>
+  <div class="mobile-overlay" id="overlay" onclick="toggleSidebar()"></div>
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Buka menu">☰</button>
+      <div class="page-heading"><strong id="headerTitle">Dashboard</strong><small>Manajemen keuangan Agen BRILink & Warung</small></div>
+      <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Cari transaksi, pelanggan, atau menu..."></div>
+      <div class="top-actions"><button class="icon-btn" title="Notifikasi">♧</button><span>🔔</span><span class="admin-label">Admin ▾</span><div class="avatar">A</div></div>
+    </header>
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-title"><div><h1>Dashboard</h1><p>Ringkasan kondisi keuangan dan penutupan kas harian agen.</p></div></div>
+        <div class="grid stats">
+          <div class="stat"><span class="sicon">▣</span><div class="label">Total Saldo Tersedia</div><div class="value" id="dashTotal">Rp 0</div><small>Seluruh rekening dan uang cash</small></div>
+          <div class="stat"><span class="sicon">↗</span><div class="label">Total Pemasukan Hari Ini</div><div class="value" id="dashIncome">Rp 0</div><small>Mutasi masuk hari ini</small></div>
+          <div class="stat"><span class="sicon">↘</span><div class="label">Total Pengeluaran Hari Ini</div><div class="value" id="dashExpense">Rp 0</div><small>Mutasi keluar hari ini</small></div>
+          <div class="stat"><span class="sicon">⇄</span><div class="label">Jumlah Transaksi Hari Ini</div><div class="value" id="dashCount">0</div><small>Transaksi tercatat</small></div>
+        </div>
+        <div class="section-gap session-heading"><div><h3 style="margin:0 0 6px">Sesi Akhir · Tutup Kas Harian</h3><p class="muted" style="margin:0 0 16px">Saldo rekening, dana titipan, kas milik agen, dan selisih rekonsiliasi dihitung otomatis setiap hari.</p></div><button class="btn btn-primary" type="button" onclick="toggleNextDaySimulation()">◷ Simulasikan Hari Berikutnya</button></div>
+        <div class="panel" id="nextDaySimulation" style="display:none">
+          <div class="simulation-head"><div><h3 style="margin:0 0 4px">Simulasi Hari Berikutnya</h3><p class="muted" style="margin:0;font-size:11px">Saldo awal dan kas awal mengikuti sesi terakhir. Isi perkiraan pendapatan, pengeluaran, serta perubahan titipan. Saat disimpan, seluruh penyesuaian akan diterapkan ke rekening yang dipilih dan memperbarui saldo aktual.</p></div><span class="pill warn">SIMULASI</span></div>
+          <div class="simulation-date-row"><span class="muted">Tanggal simulasi</span><b id="simulationDate">-</b></div>
+          <div class="form-grid simulation-inputs">
+            <div class="field full"><label for="simAccount">Rekening untuk menerapkan hasil simulasi</label><select id="simAccount" class="account-options"></select></div>
+            <div class="field"><label for="simIncome">Perkiraan Pendapatan</label><input id="simIncome" class="money-input" type="text" inputmode="numeric" placeholder="Contoh: 500.000"></div>
+            <div class="field"><label for="simExpense">Perkiraan Pengeluaran</label><input id="simExpense" class="money-input" type="text" inputmode="numeric" placeholder="Contoh: 150.000"></div>
+            <div class="field"><label for="simDepositIn">Perkiraan Titipan Masuk</label><input id="simDepositIn" class="money-input" type="text" inputmode="numeric" placeholder="Contoh: 100.000"></div>
+            <div class="field"><label for="simDepositOut">Perkiraan Pengembalian Titipan</label><input id="simDepositOut" class="money-input" type="text" inputmode="numeric" placeholder="Contoh: 50.000"></div>
+          </div>
+          <div id="simulationError" class="notice simulation-error" style="display:none"></div>
+          <div class="grid simulation-results">
+            <div class="simulation-result"><small>Saldo Awal Besok</small><b id="simOpeningValue">Rp 0</b><span>Total saldo akhir sesi terakhir</span></div>
+            <div class="simulation-result"><small>Saldo Titipan Besok</small><b id="simDepositValue">Rp 0</b><span>Total titipan setelah perubahan</span></div>
+            <div class="simulation-result"><small>Saldo Kas Awal Besok</small><b id="simCashOpeningValue">Rp 0</b><span>Kas akhir sesi sebelumnya</span></div>
+            <div class="simulation-result"><small>Saldo Akhir Besok</small><b id="simClosingValue">Rp 0</b><span>Total saldo tersedia</span></div>
+            <div class="simulation-result"><small>Saldo Kas Akhir Besok</small><b id="simCashClosingValue">Rp 0</b><span>Saldo akhir dikurangi titipan</span></div>
+            <div class="simulation-result"><small>Selisih Kas Besok</small><b id="simDifferenceValue">Rp 0</b><span>Kas fisik aktual dibandingkan kas akhir sistem</span></div>
+          </div>
+          <div class="simulation-foot"><span id="simDifference" class="muted">Selisih kas: Rp 0</span><div class="simulation-actions"><span id="simSaveStatus" class="simulation-save-status" aria-live="polite"></span><button class="btn btn-light" id="resetSimulationBtn" type="button" onclick="resetNextDaySimulation()">Reset Simulasi</button><button class="btn btn-gold" id="saveSimulationBtn" type="button" onclick="saveNextDaySimulation()">✓ Simpan & Terapkan ke Saldo Aktual</button></div></div>
+          <div class="notice section-gap">Saat disimpan, pendapatan dan pengeluaran dicatat sebagai mutasi pada rekening pilihan. Perubahan titipan dicatat pada menu Saldo Titipan dan mutasi rekening yang sama. Total Saldo Tersedia, kartu rekening, serta tabel Sesi Akhir akan diperbarui. Periksa kembali angka simulasi sebelum menerapkannya.</div>
+        </div>
+        <div class="panel section-gap">
+          <div class="form-grid">
+            <div class="field"><label for="physicalCashInput">Kas Fisik Akhir (input saat tutup kas)</label><input id="physicalCashInput" class="money-input" type="text" inputmode="numeric" placeholder="Masukkan hasil hitung uang fisik"><small class="muted">Isi berdasarkan uang nyata yang dihitung. Selisih akan dibandingkan dengan saldo kas akhir sistem.</small></div>
+            <div class="field" style="align-self:end"><button class="btn btn-primary" type="button" onclick="savePhysicalCash()">Simpan Kas Fisik Hari Ini</button><small id="physicalCashStatus" class="muted"></small></div>
+          </div>
+        </div>
+        <div class="panel section-gap">
+          <div class="table-wrap">
+            <table class="session-table">
+              <thead><tr><th>Tanggal</th><th>Saldo Awal</th><th>Saldo Titipan Awal</th><th>Saldo Akhir</th><th>Saldo Titipan Akhir</th><th>Saldo Kas Awal</th><th>Saldo Kas Akhir Sistem</th><th>Kas Fisik Akhir</th><th>Pendapatan</th><th>Pengeluaran</th><th>Selisih</th></tr></thead>
+              <tbody id="sessionTable"><tr><td colspan="11" class="empty">Belum ada data sesi.</td></tr></tbody>
+            </table>
+          </div>
+          <div class="notice section-gap">Saldo Awal hari pertama mengikuti total saldo tersedia pada awal pencatatan; hari berikutnya mengikuti Saldo Akhir hari sebelumnya. Saldo Titipan Awal mengikuti posisi titipan pada awal hari, sedangkan Saldo Titipan Akhir mengikuti menu Saldo Titipan pada akhir hari. Saldo Kas Awal = Saldo Awal − Saldo Titipan Awal. Saldo Kas Akhir = Saldo Akhir − Saldo Titipan Akhir. Kas Fisik Akhir diisi berdasarkan penghitungan uang nyata. Selisih = Kas Fisik Akhir − Saldo Kas Akhir Sistem. Selisih Rp0 berarti kas fisik sesuai dengan pembukuan.</div>
+        </div>
+        <div class="panel section-gap"><h3>Transaksi Terakhir</h3><div id="recentTransactions" class="empty">Belum ada transaksi yang tercatat.</div></div>
+      </section>
+      <!-- TRANSAKSI -->
+      <section class="page" id="page-transaksi">
+        <div class="page-title"><div><h1>Transaksi Agen</h1><p>Catat transaksi layanan BRILink.</p></div></div>
+        <div class="grid stats">
+          <div class="stat"><div class="label">Transaksi Hari Ini</div><div class="value" id="trxCount">0</div><small>Jumlah transaksi</small></div>
+          <div class="stat"><div class="label">Nominal Transaksi</div><div class="value" id="trxNominal">Rp 0</div><small>Total nominal layanan</small></div>
+          <div class="stat"><div class="label">Fee Bank</div><div class="value" id="trxBankFee">Rp 0</div><small>Fee bank tercatat</small></div>
+          <div class="stat"><div class="label">Fee Agen</div><div class="value" id="trxAgentFee">Rp 0</div><small>Fee agen tercatat</small></div>
+        </div>
+        <div class="grid two-col">
+          <div class="panel"><h3>Input Transaksi Baru</h3>
+            <form id="transactionForm">
+              <div class="form-grid">
+                <div class="field"><label>Tanggal Transaksi</label><input type="datetime-local" id="trxDate" required></div>
+                <div class="field"><label>Saldo / Rekening</label><select id="trxAccount" class="account-options"></select></div>
+                <div class="field"><label>Jenis Layanan</label><select id="trxService" required><option value="">Pilih layanan</option><option>Setor Tunai</option><option>Tarik Tunai</option><option>PKH</option><option>BPNT</option><option>Transfer</option><option>Pembayaran</option><option>Pembelian</option><option>Lainnya</option></select></div>
+                <div class="field"><label>Nominal Transaksi (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="trxAmount" placeholder="Contoh: 500000" required></div>
+                <div class="field" id="bankFeeField"><label>Admin Bank (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="trxBankFeeInput" value="0"></div>
+                <div class="field" id="agentFeeField"><label>Admin Agen (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="trxAgentFeeInput" value="0"></div>
+                <div class="field full"><label>Keterangan</label><textarea id="trxNote" placeholder="Catatan transaksi (opsional)"></textarea></div>
+              </div>
+              <div class="notice section-gap" id="feeHint">Pilih jenis layanan untuk menampilkan kolom biaya yang sesuai.</div>
+              <div class="form-actions"><button type="reset" class="btn btn-light">Reset</button><button class="btn btn-primary">Simpan Transaksi</button></div>
+            </form>
+          </div>
+          <div class="panel"><h3>Riwayat Transaksi Agen</h3><div class="toolbar"><input id="trxFilter" placeholder="Cari layanan..." oninput="renderTables()"><select id="trxTypeFilter" onchange="renderTables()"><option value="">Semua layanan</option><option>Setor Tunai</option><option>Tarik Tunai</option><option>PKH</option><option>BPNT</option></select></div><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Layanan</th><th>Rekening</th><th>Nominal</th><th>Fee Agen</th></tr></thead><tbody id="trxTable"></tbody></table></div></div>
+        </div>
+      </section>
+      <!-- SALDO -->
+      <section class="page" id="page-saldo">
+        <div class="page-title"><div><h1>Saldo & Rekening</h1><p>Pantau saldo seluruh rekening, aplikasi, dan uang tunai.</p></div><button class="btn btn-primary" id="openOpeningModalBtn" type="button" onclick="openOpeningModal()">＋ Input Saldo Awal</button></div>
+        <div class="grid stats saldo-stats"><div class="stat"><div class="label">Total Saldo Tersedia</div><div class="value balance-value-row"><span id="balanceTotalValue">Rp 0</span><button class="balance-visibility-btn" id="toggleBalanceVisibility" type="button" onclick="toggleBalanceVisibility()" aria-label="Sembunyikan saldo" title="Sembunyikan saldo" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div><small>Rekening dan kas</small></div><div class="stat"><div class="label">Total Piutang</div><div class="value" id="balanceDebt">Rp 0</div><small>Hutang pelanggan</small></div><div class="stat"><div class="label">Jumlah Rekening</div><div class="value">7</div><small>Termasuk uang cash</small></div><div class="stat"><div class="label">Mutasi Tercatat</div><div class="value" id="balanceMutations">0</div><small>Seluruh aktivitas saldo</small></div></div>
+        <div class="panel"><h3>Daftar Saldo</h3><div class="grid account-grid" id="balanceAccounts"></div></div>
+        <div class="grid two-col section-gap"><div class="panel"><h3>⚠ Peringatan Saldo Minimum</h3><p class="muted">Atur batas saldo aman untuk setiap rekening. Peringatan muncul otomatis saat saldo di bawah batas.</p><div class="table-wrap"><table><thead><tr><th>Rekening</th><th>Saldo Saat Ini</th><th>Batas Minimum</th><th>Status</th></tr></thead><tbody id="minimumBalanceTable"></tbody></table></div></div><div class="panel"><h3>Rekonsiliasi Saldo Rekening</h3><p class="muted">Masukkan saldo aktual dari aplikasi bank atau hitung uang tunai, lalu bandingkan dengan saldo pembukuan.</p><div class="table-wrap"><table><thead><tr><th>Rekening</th><th>Saldo Sistem</th><th>Saldo Aktual</th><th>Selisih</th></tr></thead><tbody id="reconciliationTable"></tbody></table></div><div class="notice section-gap" id="reconciliationStatus">Isi saldo aktual untuk memulai rekonsiliasi.</div></div></div>
+        <div class="panel section-gap"><h3>Mutasi Saldo Terbaru</h3><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Rekening</th><th>Sumber</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody id="ledgerTable"></tbody></table></div></div>
+        <div class="modal-backdrop" id="openingModal" role="dialog" aria-modal="true" aria-labelledby="openingModalTitle" onclick="if(event.target===this)closeOpeningModal()">
+          <div class="modal-card">
+            <div class="modal-head"><div><h2 id="openingModalTitle">Input Saldo Awal Pertama</h2><p>Masukkan saldo yang tersedia pada setiap rekening saat mulai menggunakan aplikasi.</p></div><button class="modal-close" type="button" aria-label="Tutup" onclick="closeOpeningModal()">×</button></div>
+            <div class="notice">Saldo awal menjadi dasar perhitungan saldo tersedia. Isi nominal masing-masing rekening; rekening yang belum memiliki saldo dapat dibiarkan Rp0. Jika saldo awal sudah mencakup uang titipan, catat nominalnya sebagai Titipan Awal pada menu Saldo Titipan agar dipisahkan dari saldo milik agen.</div>
+            <form id="settingsForm"><div class="form-grid" id="openingBalanceFields"></div><div class="form-actions"><button class="btn btn-light" type="button" onclick="closeOpeningModal()">Batal</button><button class="btn btn-primary" id="openingSubmitBtn">Simpan Saldo Awal</button></div></form>
+          </div>
+        </div>
+      </section>
+      <!-- SALDO TITIPAN -->
+      <section class="page" id="page-titipan">
+        <div class="page-title"><div><h1>Saldo Titipan</h1><p>Catat dana milik pelanggan yang sementara berada di rekening atau kas agen.</p></div></div>
+        <div class="grid stats">
+          <div class="stat"><div class="label">Total Saldo Titipan</div><div class="value" id="depositTotal">Rp 0</div><small>Total dana titipan yang masih tersimpan</small></div>
+          <div class="stat"><div class="label">Titipan Masuk</div><div class="value" id="depositInTotal">Rp 0</div><small>Akumulasi titipan masuk</small></div>
+          <div class="stat"><div class="label">Pengembalian</div><div class="value" id="depositOutTotal">Rp 0</div><small>Akumulasi dana dikembalikan</small></div>
+          <div class="stat"><div class="label">Jumlah Penitip</div><div class="value" id="depositCustomers">0</div><small>Penitip dengan saldo tersisa</small></div>
+        </div>
+        <div class="grid two-col">
+          <div class="panel">
+            <h3>Catat Saldo Titipan</h3>
+            <form id="depositForm"><div class="form-grid">
+              <div class="field"><label>Tanggal</label><input type="datetime-local" id="depositDate" required></div>
+              <div class="field"><label>Nama Penitip</label><input id="depositName" placeholder="Nama pemilik dana" required></div>
+              <div class="field"><label>Jenis Catatan</label><select id="depositType"><option value="in">Titipan Masuk</option><option value="opening">Titipan Awal (sudah termasuk saldo awal)</option><option value="out">Pengembalian Titipan</option></select></div>
+              <div class="field"><label>Masuk / Keluar Dari</label><select id="depositAccount" class="account-options"></select></div>
+              <div class="field full"><label>Nominal (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="depositAmount" placeholder="Masukkan nominal" required></div>
+              <div class="field full"><label>Keterangan</label><textarea id="depositNote" placeholder="Catatan tambahan (opsional)"></textarea></div>
+            </div><div class="notice section-gap">Pilih Titipan Awal hanya untuk dana titipan yang sudah termasuk di saldo awal rekening. Titipan Masuk akan menambah saldo rekening; Pengembalian Titipan akan mengurangi saldo rekening dan saldo titipan.</div>
+            <div class="form-actions"><button class="btn btn-primary">Simpan Catatan Titipan</button></div></form>
+          </div>
+          <div class="panel"><h3>Saldo Titipan per Pelanggan</h3><div class="table-wrap"><table><thead><tr><th>Nama Penitip</th><th>Total Masuk</th><th>Dikembalikan</th><th>Sisa Titipan</th></tr></thead><tbody id="depositCustomerTable"></tbody></table></div></div>
+        </div>
+        <div class="panel section-gap"><h3>Riwayat Saldo Titipan</h3><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Nama Penitip</th><th>Jenis</th><th>Rekening / Kas</th><th>Nominal</th><th>Keterangan</th></tr></thead><tbody id="depositTable"></tbody></table></div></div>
+      </section>
+      <!-- HUTANG -->
+      <section class="page" id="page-hutang">
+        <div class="page-title"><div><h1>Hutang Pelanggan</h1><p>Kelola casbon, cicilan, dan pelunasan pelanggan.</p></div><button class="btn btn-primary" onclick="document.getElementById('debtName').focus()">＋ Tambah Casbon</button></div>
+        <div class="grid stats"><div class="stat"><div class="label">Total Hutang</div><div class="value" id="debtTotal">Rp 0</div><small>Total piutang tercatat</small></div><div class="stat"><div class="label">Total Dibayar</div><div class="value" id="debtPaid">Rp 0</div><small>Akumulasi pembayaran</small></div><div class="stat"><div class="label">Sisa Piutang</div><div class="value" id="debtRemaining">Rp 0</div><small>Belum dilunasi</small></div><div class="stat"><div class="label">Pelanggan</div><div class="value" id="debtCustomers">0</div><small>Pelanggan memiliki catatan</small></div></div>
+        <div class="grid two-col">
+          <div class="panel"><h3>Tambah Hutang / Casbon</h3><form id="debtForm"><div class="form-grid">
+            <div class="field"><label>Tanggal</label><input type="datetime-local" id="debtDate" required></div>
+            <div class="field"><label>Tanggal Pengingat / Jatuh Tempo</label><input type="date" id="debtDueDate"><small class="muted">Opsional</small></div>
+            <div class="field"><label>Nama Pelanggan</label><input id="debtName" placeholder="Nama pelanggan" required></div>
+            <div class="field"><label>Saldo / Rekening</label><select id="debtAccount" class="account-options"></select></div>
+            <div class="field"><label>Layanan</label><select id="debtService"><option>Casbon / Lainnya</option><option>Setor Tunai</option><option>Tarik Tunai</option><option>Transfer</option><option>Pembelian</option></select></div>
+            <div class="field full"><label>Nominal Hutang (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="debtAmount" required placeholder="Masukkan nominal"></div>
+            <div class="field full"><label>Keterangan</label><textarea id="debtNote" placeholder="Keterangan (opsional)"></textarea></div>
+          </div><div class="form-actions"><button class="btn btn-primary">Simpan Hutang</button></div></form></div>
+          <div class="panel"><h3>Bayar Hutang</h3><form id="paymentForm"><div class="form-grid">
+            <div class="field full"><label>Pilih Pelanggan</label><select id="payDebtId" required><option value="">Pilih pelanggan / tagihan</option></select></div>
+            <div class="field"><label>Tanggal Pembayaran</label><input type="datetime-local" id="payDate" required></div>
+            <div class="field"><label>Saldo Penerima</label><select id="payAccount" class="account-options"></select></div>
+            <div class="field full"><label>Jumlah Bayar (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="payAmount" required></div>
+          </div><div class="form-actions"><button class="btn btn-gold">Bayar Hutang</button></div></form></div>
+        </div>
+        <div class="panel section-gap"><h3>Rekap Pelanggan — Tabel 1</h3><div class="table-wrap"><table><thead><tr><th>Pelanggan</th><th>Total Hutang</th><th>Total Dibayar</th><th>Sisa</th><th>Aksi</th></tr></thead><tbody id="debtCustomerTable"></tbody></table></div></div>
+        <div class="panel section-gap"><h3>Pengingat Hutang Pelanggan</h3><p class="muted">Daftar tagihan yang belum lunas, termasuk yang tanggal pengingatnya sudah tiba atau terlewati.</p><div id="debtReminderList" class="empty">Belum ada pengingat hutang.</div></div><div class="panel section-gap"><h3>Rincian Hutang — Tabel 2</h3><p class="panel-sub" id="debtDetailLabel">Pilih pelanggan pada tabel di atas untuk melihat rincian.</p><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Pelanggan</th><th>Rekening</th><th>Layanan</th><th>Jumlah Hutang</th><th>Dibayar</th><th>Sisa</th><th>Pengingat</th><th>Status</th></tr></thead><tbody id="debtDetailTable"></tbody></table></div></div>
+      </section>
+      <!-- OPERASIONAL -->
+      <section class="page" id="page-operasional">
+        <div class="page-title"><div><h1>Operasional</h1><p>Catat uang masuk dan uang keluar untuk kebutuhan operasional.</p></div></div>
+        <div class="grid stats"><div class="stat"><div class="label">Total Uang Masuk</div><div class="value" id="opsIn">Rp 0</div><small>Catatan operasional</small></div><div class="stat"><div class="label">Total Uang Keluar</div><div class="value" id="opsOut">Rp 0</div><small>Catatan operasional</small></div><div class="stat"><div class="label">Selisih Operasional</div><div class="value" id="opsNet">Rp 0</div><small>Masuk dikurangi keluar</small></div><div class="stat"><div class="label">Jumlah Catatan</div><div class="value" id="opsCount">0</div><small>Aktivitas tersimpan</small></div></div>
+        <div class="grid two-col"><div class="panel"><h3>Catat Operasional</h3><form id="opsForm"><div class="form-grid">
+          <div class="field"><label>Tanggal & Jam</label><input type="datetime-local" id="opsDate" required></div>
+          <div class="field"><label>Saldo / Rekening</label><select id="opsAccount" class="account-options"></select></div>
+          <div class="field"><label>Jenis Operasional</label><select id="opsType"><option value="in">Uang Masuk</option><option value="out">Uang Keluar</option></select></div>
+          <div class="field"><label>Kategori</label><select id="opsCategory"><option>Operasional Umum</option><option>Listrik</option><option>Air / PDAM</option><option>Internet</option><option>Pulsa / Kuota</option><option>Transportasi</option><option>Konsumsi</option><option>Perlengkapan</option><option>Perawatan</option><option>Lainnya</option></select></div>
+          <div class="field full"><label>Nominal (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="opsAmount" required></div>
+          <div class="field full"><label>Keterangan</label><textarea id="opsNote" placeholder="Keterangan operasional"></textarea></div>
+        </div><div class="form-actions"><button class="btn btn-primary">Simpan Operasional</button></div></form></div>
+        <div class="panel"><h3>Riwayat Operasional</h3><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Nominal</th></tr></thead><tbody id="opsTable"></tbody></table></div></div></div>
+      </section>
+      <!-- PINDAH SALDO -->
+      <section class="page" id="page-pindah">
+        <div class="page-title"><div><h1>Pindah Saldo</h1><p>Pindahkan dana antar rekening atau aplikasi dengan pencatatan otomatis.</p></div></div>
+        <div class="grid two-col"><div class="panel"><h3>Form Pindah Saldo</h3><form id="transferForm"><div class="form-grid">
+          <div class="field full"><label>Tanggal & Jam</label><input type="datetime-local" id="transferDate" required></div>
+          <div class="field"><label>Rekening Asal</label><select id="transferFrom" class="account-options"></select></div>
+          <div class="field"><label>Rekening Tujuan</label><select id="transferTo" class="account-options"></select></div>
+          <div class="field"><label>Nominal Transfer (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="transferAmount" required></div>
+          <div class="field"><label>Biaya Admin (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="transferFee" value="0"></div>
+          <div class="field full"><label>Keterangan</label><textarea id="transferNote" placeholder="Catatan transfer"></textarea></div>
+        </div><div class="notice section-gap">Saldo asal akan berkurang sebesar nominal transfer ditambah biaya admin. Saldo tujuan bertambah sebesar nominal transfer.</div><div class="form-actions"><button class="btn btn-primary">Pindah Saldo</button></div></form></div>
+        <div class="panel"><h3>Riwayat Pindah Saldo</h3><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Dari</th><th>Ke</th><th>Nominal</th><th>Admin</th></tr></thead><tbody id="transferTable"></tbody></table></div></div></div>
+      </section>
+      <!-- FEE -->
+      <section class="page" id="page-fee">
+        <div class="page-title"><div><h1>Fee & Komisi</h1><p>Catat pendapatan fee bank dan komisi ke rekening tujuan.</p></div></div>
+        <div class="grid stats"><div class="stat"><div class="label">Total Fee Tercatat</div><div class="value" id="feeTotal">Rp 0</div><small>Akumulasi fee</small></div><div class="stat"><div class="label">Jumlah Catatan</div><div class="value" id="feeCount">0</div><small>Catatan fee</small></div><div class="stat"><div class="label">Fee Bank</div><div class="value" id="feeBankTotal">Rp 0</div><small>Jenis fee bank</small></div><div class="stat"><div class="label">Fee Agen</div><div class="value" id="feeAgentTotal">Rp 0</div><small>Jenis fee agen</small></div></div>
+        <div class="grid two-col"><div class="panel"><h3>Catat Fee / Komisi</h3><form id="feeForm"><div class="form-grid">
+          <div class="field"><label>Tanggal</label><input type="datetime-local" id="feeDate" required></div>
+          <div class="field"><label>Jenis Fee</label><select id="feeType"><option>Fee Bank</option><option>Fee Agen</option><option>Komisi Lainnya</option></select></div>
+          <div class="field"><label>Jumlah Fee (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="feeAmount" required></div>
+          <div class="field"><label>Fee Masuk Ke</label><select id="feeAccount" class="account-options"></select></div>
+          <div class="field full"><label>Keterangan</label><textarea id="feeNote"></textarea></div>
+        </div><div class="form-actions"><button class="btn btn-primary">Simpan Fee</button></div></form></div>
+        <div class="panel"><h3>Riwayat Fee & Komisi</h3><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Masuk Ke</th><th>Jumlah</th></tr></thead><tbody id="feeTable"></tbody></table></div></div></div>
+      </section>
+      <!-- WARUNG -->
+      <section class="page" id="page-warung">
+        <div class="page-title"><div><h1>Warung</h1><p>Catat omzet penjualan Es Cream, Kedai, dan Rokok.</p></div></div>
+        <div class="grid stats"><div class="stat"><div class="label">Total Penjualan</div><div class="value" id="salesTotal">Rp 0</div><small>Omzet tercatat</small></div><div class="stat"><div class="label">Es Cream</div><div class="value" id="salesIce">Rp 0</div><small>Total omzet Es Cream</small></div><div class="stat"><div class="label">Kedai</div><div class="value" id="salesShop">Rp 0</div><small>Total omzet Kedai</small></div><div class="stat"><div class="label">Rokok</div><div class="value" id="salesCig">Rp 0</div><small>Total omzet Rokok</small></div></div>
+        <div class="grid two-col"><div class="panel"><h3>Input Transaksi Warung</h3><form id="salesForm"><div class="form-grid">
+          <div class="field"><label>Tanggal</label><input type="datetime-local" id="salesDate" required></div>
+          <div class="field"><label>Jenis Penjualan</label><select id="salesType"><option>Es Cream</option><option>Kedai</option><option>Rokok</option></select></div>
+          <div class="field"><label>Nominal Penjualan (Rp)</label><input type="text" inputmode="numeric" autocomplete="off" class="money-input" id="salesAmount" required></div>
+          <div class="field"><label>Uang Diterima Ke</label><select id="salesAccount" class="account-options"></select></div>
+          <div class="field full"><label>Keterangan</label><textarea id="salesNote" placeholder="Catatan penjualan (opsional)"></textarea></div>
+        </div><div class="form-actions"><button class="btn btn-primary">Simpan Penjualan</button></div></form></div>
+        <div class="panel"><h3>Riwayat Transaksi Warung</h3><div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Penjualan</th><th>Nominal</th><th>Rekening</th></tr></thead><tbody id="salesTable"></tbody></table></div></div></div>
+      </section>
+      <!-- RIWAYAT -->
+      <section class="page" id="page-riwayat">
+        <div class="page-title"><div><h1>Riwayat Transaksi</h1><p>Telusuri transaksi berdasarkan rentang tanggal dan rekening.</p></div><button class="btn btn-light" onclick="window.print()">Cetak</button></div>
+        <div class="panel"><h3>Filter Riwayat</h3><div class="toolbar"><label class="muted">Dari</label><input type="date" id="historyFrom"><label class="muted">Sampai</label><input type="date" id="historyTo"><select id="historyAccount" class="account-options"><option value="">Semua saldo</option></select><select id="historyType"><option value="">Semua jenis</option><option>Transaksi Agen</option><option>Operasional</option><option>Pindah Saldo</option><option>Fee</option><option>Warung</option><option>Pembayaran Hutang</option></select><button class="btn btn-primary" onclick="searchHistory()">Cari</button><button class="btn btn-light" onclick="resetHistory()">Reset</button></div>
+          <div class="grid stats"><div class="stat"><div class="label">Jumlah Transaksi</div><div class="value" id="historyCount">0</div><small>Sesuai filter</small></div><div class="stat"><div class="label">Total Nominal</div><div class="value" id="historyNominal">Rp 0</div><small>Nilai aktivitas</small></div><div class="stat"><div class="label">Uang Masuk</div><div class="value" id="historyIn">Rp 0</div><small>Mutasi masuk</small></div><div class="stat"><div class="label">Uang Keluar</div><div class="value" id="historyOut">Rp 0</div><small>Mutasi keluar</small></div></div>
+          <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Rekening</th><th>Nominal</th><th>Arus</th></tr></thead><tbody id="historyTable"></tbody></table></div>
+        </div>
+      </section>
+      <!-- LAPORAN -->
+      <section class="page" id="page-laporan">
+        <div class="page-title"><div><h1>Laporan Keuangan</h1><p>Ringkasan pemasukan, pengeluaran, saldo, dan omzet.</p></div><button class="btn btn-light" onclick="window.print()">Cetak / Simpan PDF</button></div>
+        <div class="grid stats"><div class="stat"><div class="label">Total Pemasukan</div><div class="value" id="reportIn">Rp 0</div><small>Mutasi masuk</small></div><div class="stat"><div class="label">Total Pengeluaran</div><div class="value" id="reportOut">Rp 0</div><small>Mutasi keluar</small></div><div class="stat"><div class="label">Selisih Arus Kas</div><div class="value" id="reportNet">Rp 0</div><small>Pemasukan dikurangi pengeluaran</small></div><div class="stat"><div class="label">Omzet Warung</div><div class="value" id="reportSales">Rp 0</div><small>Total penjualan</small></div></div>
+        <div class="panel"><h3>Ringkasan Per Rekening</h3><div class="table-wrap"><table><thead><tr><th>Rekening</th><th>Saldo Saat Ini</th><th>Total Mutasi</th></tr></thead><tbody id="reportAccounts"></tbody></table></div></div>
+        <div class="notice section-gap">Laporan pada prototype ini menggunakan data yang dimasukkan selama sesi penggunaan. Integrasi penyimpanan permanen dan ekspor laporan terstruktur akan dilakukan pada tahap pengembangan berikutnya.</div>
+      </section>
+      <!-- PENGATURAN -->
+      <section class="page" id="page-pengaturan">
+        <div class="page-title"><div><h1>Pengaturan</h1><p>Informasi dan preferensi prototype aplikasi.</p></div></div>
+        <div class="panel"><h3>Informasi Aplikasi</h3><div class="notice">Prototype HTML Kas Agen BRILink.<br>Versi rancangan antarmuka 1.19.<br><br>Saldo awal rekening diinput melalui tombol <b>Input Saldo Awal</b> pada halaman Saldo & Rekening. Data tersimpan otomatis di penyimpanan lokal browser dan dapat dicadangkan melalui file JSON. Data belum tersinkron antarperangkat, belum terhubung ke Firebase, dan belum memiliki autentikasi admin sungguhan.</div><div class="panel section-gap"><h3>Backup dan Pemulihan Data</h3><p class="muted">Simpan salinan seluruh data pembukuan ke file JSON, lalu impor kembali file tersebut saat pindah perangkat atau memulihkan data.</p><div class="form-actions"><button class="btn btn-primary" type="button" onclick="exportBackup()">⬇ Backup Data</button><label class="btn btn-light" for="backupFile">⬆ Pulihkan dari File</label><input id="backupFile" type="file" accept="application/json,.json" style="display:none" onchange="importBackup(event)"></div><small class="muted" id="backupStatus">Backup disimpan sebagai file di perangkat Anda. Simpan juga salinannya di tempat aman.</small></div>
+        <div class="panel section-gap"><h3>Pengaturan Saldo Minimum</h3><p class="muted">Tentukan batas minimum untuk masing-masing rekening.</p><div class="form-grid" id="minimumBalanceSettings"></div><div class="form-actions"><button class="btn btn-primary" type="button" onclick="saveMinimumBalances()">Simpan Batas Minimum</button></div></div>
+        <div class="section-gap"><button class="btn btn-danger" onclick="if(confirm('Hapus seluruh data sementara pada prototype?')) location.reload()">Reset Data Prototype</button></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+<script>
+const ACCOUNTS=['BRI','MANDIRI','BNI','ORDER KUOTA','SEABANK','DANA','UANG CASH'];
+const parseMoney=value=>Number(String(value??'').replace(/[^0-9]/g,''))||0;
+const formatMoneyInput=value=>{const digits=String(value??'').replace(/[^0-9]/g,'');return digits?Number(digits).toLocaleString('id-ID'):''};
+const money=n=>'Rp '+Number(n||0).toLocaleString('id-ID');
+// Format nominal live while typing; stored/calculated values remain plain numbers.
+document.addEventListener('input',e=>{if(e.target.classList.contains('money-input')){const el=e.target;const start=el.selectionStart;const before=el.value.slice(0,start);const digitsBefore=before.replace(/[^0-9]/g,'').length;el.value=formatMoneyInput(el.value);let pos=0,count=0;while(pos<el.value.length&&count<digitsBefore){if(/[0-9]/.test(el.value[pos]))count++;pos++}el.setSelectionRange(pos,pos);}});
+
+const nowLocal=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)};
+const dateText=v=>v?new Date(v).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'-';
+let opening=Object.fromEntries(ACCOUNTS.map(a=>[a,0]));
+let openingConfigured=false;
+let openingDate=dateKeyLocal();
+let balanceAmountVisible=true;
+let latestAvailableBalance=0;
+let ledger=[],transactions=[],debts=[],payments=[],operations=[],transfers=[],fees=[],sales=[],deposits=[];
+// Simulasi yang disimpan menjadi baris sesi berikutnya (tetap lokal selama halaman terbuka).
+let savedSimulations=[];
+const physicalCashByDate = {};
+let minimumBalances=Object.fromEntries(ACCOUNTS.map(a=>[a,0]));
+let actualBalances={};
+let activeSimulationSaved=false;
+let activeSimulationSnapshot=null;
+let selectedCustomer='';
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show')}
+function showPage(name){
+ const target=document.getElementById('page-'+name);
+ if(!target){console.warn('Halaman tidak ditemukan:',name);return;}
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ target.classList.add('active');
+ document.querySelectorAll('#navigation button').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
+ const label=document.querySelector(`#navigation button[data-page="${name}"]`)?.textContent.trim()||'Dashboard';
+ document.getElementById('headerTitle').textContent=label;
+ document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');
+ refresh();
+}
+document.querySelectorAll('#navigation button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function setDefaults(){
+ ['trxDate','debtDate','payDate','opsDate','transferDate','feeDate','salesDate','depositDate'].forEach(id=>document.getElementById(id).value=nowLocal());
+ document.querySelectorAll('.account-options').forEach(sel=>{
+  const first=sel.querySelector('option[value=""]')?.outerHTML||'';
+  sel.innerHTML=first+ACCOUNTS.map(a=>`<option>${a}</option>`).join('');
+  if(sel.id==='simAccount') sel.value='UANG CASH';
+ });
+}
+function balance(a){return opening[a]+ledger.filter(x=>x.account===a).reduce((s,x)=>s+x.amount,0)}
+function renderBalanceVisibility(){
+ const amount=document.getElementById('balanceTotalValue');
+ const button=document.getElementById('toggleBalanceVisibility');
+ if(!amount||!button)return;
+ amount.textContent=balanceAmountVisible?money(latestAvailableBalance):'••••••••';
+ button.setAttribute('aria-label',balanceAmountVisible?'Sembunyikan saldo':'Tampilkan saldo');
+ button.setAttribute('title',balanceAmountVisible?'Sembunyikan saldo':'Tampilkan saldo');
+ button.setAttribute('aria-pressed',String(!balanceAmountVisible));
+ button.innerHTML=balanceAmountVisible
+  ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>'
+  : '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a14.8 14.8 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.5 10.5 0 0 0 4-.8"/></svg>';
+}
+function toggleBalanceVisibility(){balanceAmountVisible=!balanceAmountVisible;renderBalanceVisibility();}
+function addMove(account,amount,source,type,detail='',dateValue=nowLocal()){
+ ledger.push({date:dateValue||nowLocal(),account,amount,source,type,detail});
+}
+function allDebtTotals(){let total=0,paid=0;debts.forEach(d=>{total+=d.amount;paid+=payments.filter(p=>p.debtId===d.id).reduce((s,p)=>s+p.amount,0)});return {total,paid,remaining:total-paid}}
+function renderAccounts(target){
+ document.getElementById(target).innerHTML=ACCOUNTS.map(a=>`<div class="account"><div class="name">${a}</div><div class="amount">${money(balance(a))}</div><small>Saldo tersedia</small></div>`).join('');
+}
+function renderTables(){
+ const q=(document.getElementById('trxFilter')?.value||'').toLowerCase(),type=document.getElementById('trxTypeFilter')?.value||'';
+ const rows=transactions.filter(t=>t.service.toLowerCase().includes(q)&&(!type||t.service===type)).slice().reverse();
+ document.getElementById('trxTable').innerHTML=rows.map(t=>`<tr><td>${dateText(t.date)}</td><td>${t.service}</td><td>${t.account}</td><td>${money(t.amount)}</td><td>${money(t.agentFee)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">Belum ada transaksi.</td></tr>';
+ document.getElementById('ledgerTable').innerHTML=ledger.slice().reverse().slice(0,30).map(x=>`<tr><td>${dateText(x.date)}</td><td>${x.account}</td><td>${x.source}</td><td>${x.type}</td><td class="${x.amount>=0?'positive':'negative'}">${money(x.amount)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">Belum ada mutasi.</td></tr>';
+ document.getElementById('opsTable').innerHTML=operations.slice().reverse().map(o=>`<tr><td>${dateText(o.date)}</td><td><span class="pill ${o.type==='out'?'red':''}">${o.type==='in'?'Uang Masuk':'Uang Keluar'}</span></td><td>${o.category}</td><td>${money(o.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Belum ada catatan.</td></tr>';
+ document.getElementById('transferTable').innerHTML=transfers.slice().reverse().map(t=>`<tr><td>${dateText(t.date)}</td><td>${t.from}</td><td>${t.to}</td><td>${money(t.amount)}</td><td>${money(t.fee)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">Belum ada transfer.</td></tr>';
+ document.getElementById('feeTable').innerHTML=fees.slice().reverse().map(f=>`<tr><td>${dateText(f.date)}</td><td>${f.type}</td><td>${f.account}</td><td>${money(f.amount)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Belum ada fee.</td></tr>';
+ document.getElementById('salesTable').innerHTML=sales.slice().reverse().map(s=>`<tr><td>${dateText(s.date)}</td><td>${s.type}</td><td>${money(s.amount)}</td><td>${s.account}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Belum ada penjualan.</td></tr>';
+}
+function renderDebts(){
+ const totals=allDebtTotals(),customers=[...new Set(debts.map(d=>d.name))];
+ document.getElementById('debtTotal').textContent=money(totals.total);document.getElementById('debtPaid').textContent=money(totals.paid);document.getElementById('debtRemaining').textContent=money(totals.remaining);document.getElementById('debtCustomers').textContent=customers.length;
+ const rows=customers.map(name=>{const ds=debts.filter(d=>d.name===name),t=ds.reduce((s,d)=>s+d.amount,0),p=ds.reduce((s,d)=>s+payments.filter(x=>x.debtId===d.id).reduce((a,x)=>a+x.amount,0),0);return {name,t,p,r:t-p}});
+ document.getElementById('debtCustomerTable').innerHTML=rows.map(r=>`<tr><td><b>${r.name}</b></td><td>${money(r.t)}</td><td>${money(r.p)}</td><td>${money(r.r)}</td><td><button class="btn btn-light" onclick="selectCustomer('${r.name.replace(/'/g,"\\'")}')">Lihat Rincian</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Belum ada hutang pelanggan.</td></tr>';
+ const paySelect=document.getElementById('payDebtId');paySelect.innerHTML='<option value="">Pilih tagihan</option>'+debts.filter(d=>d.amount-payments.filter(p=>p.debtId===d.id).reduce((s,p)=>s+p.amount,0)>0).map(d=>`<option value="${d.id}">${d.name} — ${money(d.amount-payments.filter(p=>p.debtId===d.id).reduce((s,p)=>s+p.amount,0))} tersisa</option>`).join('');
+ const detail=selectedCustomer?debts.filter(d=>d.name===selectedCustomer):[];
+ document.getElementById('debtDetailLabel').textContent=selectedCustomer?'Rincian hutang: '+selectedCustomer:'Pilih pelanggan pada tabel di atas untuk melihat rincian.';
+ document.getElementById('debtDetailTable').innerHTML=detail.map(d=>{const p=payments.filter(x=>x.debtId===d.id).reduce((s,x)=>s+x.amount,0),r=d.amount-p;return `<tr><td>${dateText(d.date)}</td><td>${d.name}</td><td>${d.account}</td><td>${d.service}</td><td>${money(d.amount)}</td><td>${money(p)}</td><td>${money(r)}</td><td>${d.dueDate||'—'}</td><td><span class="pill ${r===0?'':(d.dueDate&&d.dueDate<dateKeyLocal())?'red':'warn'}">${r===0?'Lunas':(d.dueDate&&d.dueDate<dateKeyLocal())?'Terlambat':p>0?'Cicilan':'Belum Lunas'}</span></td></tr>`}).join('')||'<tr><td colspan="9" class="empty">Belum ada rincian untuk ditampilkan.</td></tr>';
+ const reminders=debts.map(d=>{const paid=payments.filter(x=>x.debtId===d.id).reduce((a,x)=>a+x.amount,0);return {...d,remaining:d.amount-paid}}).filter(d=>d.remaining>0).sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999'));
+ document.getElementById('debtReminderList').innerHTML=reminders.length?reminders.map(d=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #edf0f5;font-size:11px"><span><b>${d.name}</b><br><small class="muted">${d.dueDate?'Pengingat: '+d.dueDate:'Belum ada tanggal pengingat'} · ${d.account}</small></span><b class="${d.dueDate&&d.dueDate<dateKeyLocal()?'negative':'positive'}">${money(d.remaining)}</b></div>`).join(''):'<div class="empty">Tidak ada hutang yang perlu diingatkan.</div>';
+}
+function selectCustomer(n){selectedCustomer=n;renderDebts()}
+function dateKeyLocal(value){
+ if(value && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+ const d=value?new Date(value):new Date();
+ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+ return `${y}-${m}-${day}`;
+}
+function depositMovementValue(entry){
+ if(entry.type==='opening'||entry.type==='in') return entry.amount;
+ return -entry.amount;
+}
+function depositBalanceAt(date, inclusive=true){
+ return deposits.filter(d=>inclusive?dateKeyLocal(d.date)<=date:dateKeyLocal(d.date)<date)
+   .reduce((sum,d)=>sum+depositMovementValue(d),0);
+}
+function depositBalanceAtStart(date){
+ // Titipan Awal yang dicatat pada tanggal sesi sudah menjadi bagian dari saldo pembuka.
+ return deposits.filter(d=>dateKeyLocal(d.date)<date||(dateKeyLocal(d.date)===date&&d.type==='opening'))
+   .reduce((sum,d)=>sum+depositMovementValue(d),0);
+}
+function depositBalanceForName(name){
+ return deposits.filter(d=>d.name.toLowerCase()===name.toLowerCase())
+   .reduce((sum,d)=>sum+depositMovementValue(d),0);
+}
+function savePhysicalCash(){
+ const input=document.getElementById('physicalCashInput');
+ const value=parseMoney(input.value);
+ const day=dateKeyLocal();
+ physicalCashByDate[day]=value;
+ persistData();
+ document.getElementById('physicalCashStatus').textContent='Kas fisik '+money(value)+' tersimpan untuk sesi hari ini.';
+ renderSession();
+}
+function sessionSummary(date){
+ const key=date||dateKeyLocal();
+ const openingTotal=ACCOUNTS.reduce((sum,a)=>sum+opening[a],0);
+ const before=ledger.filter(x=>dateKeyLocal(x.date)<key).reduce((sum,x)=>sum+x.amount,0);
+ const onDay=ledger.filter(x=>dateKeyLocal(x.date)===key);
+ // Saldo Awal adalah saldo tersedia sebelum mutasi pada tanggal tersebut.
+ const openingBalance=openingTotal+before;
+ // Saldo Akhir adalah total saldo tersedia setelah seluruh mutasi hari tersebut.
+ const closingBalance=openingBalance+onDay.reduce((sum,x)=>sum+x.amount,0);
+ const depositAtStart=depositBalanceAtStart(key);
+ const deposit=depositBalanceAt(key,true);
+ const cashOpening=openingBalance-depositAtStart;
+ const cashClosing=closingBalance-deposit;
+ const excluded=['Transfer Masuk','Transfer Keluar','Titipan Masuk','Pengembalian Titipan'];
+ const income=onDay.filter(x=>x.amount>0&&!excluded.includes(x.type)).reduce((sum,x)=>sum+x.amount,0);
+ const expense=-onDay.filter(x=>x.amount<0&&!excluded.includes(x.type)).reduce((sum,x)=>sum+x.amount,0);
+ // Rekonsiliasi: kas awal + pendapatan - pengeluaran - kas akhir.
+ const physicalCash=physicalCashByDate[key]??cashClosing;
+ // Selisih rekonsiliasi membandingkan kas fisik nyata dengan kas akhir sistem.
+ const difference=physicalCash-cashClosing;
+ return {openingBalance,depositAtStart,closingBalance,deposit,cashOpening,cashClosing,physicalCash,income,expense,difference};
+}
+function renderSession(){
+ const today=dateKeyLocal();
+ const daySet=new Set([today]);
+ if(openingConfigured&&openingDate){
+   let cursor=openingDate;
+   while(cursor<=today){
+     daySet.add(cursor);
+     const next=new Date(cursor+'T00:00:00');next.setDate(next.getDate()+1);
+     cursor=dateKeyLocal(next);
+   }
+ }
+ ledger.forEach(x=>{const day=dateKeyLocal(x.date);if(!openingConfigured||day>=openingDate)daySet.add(day)});
+ deposits.forEach(x=>{const day=dateKeyLocal(x.date);if(!openingConfigured||day>=openingDate)daySet.add(day)});
+ savedSimulations.forEach(x=>daySet.add(x.date));
+ const days=[...daySet].filter(day=>!openingConfigured||day>=openingDate||savedSimulations.some(x=>x.date===day)).sort((a,b)=>b.localeCompare(a));
+ document.getElementById('sessionTable').innerHTML=days.map(day=>{
+   const saved=savedSimulations.find(x=>x.date===day);
+   const v=saved?.applied?sessionSummary(day):(saved||sessionSummary(day));
+   const dateLabel=new Date(day+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+   const diffClass=v.difference>0?'positive':v.difference<0?'negative':'muted';
+   const diffSign=v.difference>0?'+':'';
+   const dayBadge=saved?.applied?' <span class="pill blue">Diterapkan</span>':saved?' <span class="pill warn">Simulasi tersimpan</span>':day===today?' <span class="pill blue">Hari ini</span>':'';
+   return `<tr><td>${dateLabel}${dayBadge}</td><td>${money(v.openingBalance)}</td><td>${money(v.depositAtStart??depositBalanceAtStart(day))}</td><td>${money(v.closingBalance)}</td><td>${money(v.deposit)}</td><td>${money(v.cashOpening)}</td><td>${money(v.cashClosing)}</td><td>${money(v.physicalCash??v.cashClosing)}</td><td class="positive">${money(v.income)}</td><td class="negative">${money(v.expense)}</td><td class="difference-cell ${diffClass}">${diffSign}${money(v.difference)}</td></tr>`;
+ }).join('')||'<tr><td colspan="11" class="empty">Belum ada data sesi.</td></tr>';
+}
+function nextDateKey(dateKey){
+ const d=new Date(dateKey+'T00:00:00');d.setDate(d.getDate()+1);return dateKeyLocal(d);
+}
+function getNextSimulationBase(){
+ const latest=savedSimulations.slice().sort((a,b)=>a.date.localeCompare(b.date)).at(-1);
+ if(latest){
+   return {baseDate:latest.date,date:nextDateKey(latest.date),openingBalance:latest.closingBalance,cashOpening:latest.cashClosing,deposit:latest.deposit};
+ }
+ const today=dateKeyLocal(),current=sessionSummary(today);
+ return {baseDate:today,date:nextDateKey(today),openingBalance:current.closingBalance,cashOpening:current.cashClosing,deposit:current.deposit};
+}
+function toggleNextDaySimulation(){
+ const panel=document.getElementById('nextDaySimulation');
+ const willOpen=panel.style.display==='none';
+ panel.style.display=willOpen?'block':'none';
+ if(willOpen){if(!activeSimulationSaved)renderNextDaySimulation();panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+function baseDepositOpeningForSimulation(){
+ const base=getNextSimulationBase();
+ return base.deposit;
+}
+function calculateNextDaySimulation(){
+ const base=getNextSimulationBase();
+ const income=parseMoney(document.getElementById('simIncome').value);
+ const expense=parseMoney(document.getElementById('simExpense').value);
+ const depositIn=parseMoney(document.getElementById('simDepositIn').value);
+ const depositOut=parseMoney(document.getElementById('simDepositOut').value);
+ const endingDeposit=base.deposit+depositIn-depositOut;
+ // Titipan masuk/kembali memengaruhi total saldo tersedia dan saldo titipan,
+ // tetapi tidak dihitung sebagai pendapatan/pengeluaran milik agen.
+ const closingBalance=base.openingBalance+income-expense+depositIn-depositOut;
+ const cashClosing=closingBalance-Math.max(0,endingDeposit);
+ const difference=base.cashOpening+income-expense-cashClosing;
+ return {
+   date:base.date,
+   openingBalance:base.openingBalance,
+   closingBalance,
+   deposit:Math.max(0,endingDeposit),
+   cashOpening:base.cashOpening,
+   cashClosing,
+   income,expense,difference,
+   available:closingBalance,
+   invalidDeposit:endingDeposit<0,
+   depositIn,depositOut
+ };
+}
+function setSimulationSavedState(saved){
+ activeSimulationSaved=saved;
+ const inputs=['simAccount','simIncome','simExpense','simDepositIn','simDepositOut'];
+ inputs.forEach(id=>document.getElementById(id).disabled=saved);
+ const saveBtn=document.getElementById('saveSimulationBtn');
+ saveBtn.disabled=saved;
+ saveBtn.textContent=saved?'✓ Sudah Diterapkan':'✓ Simpan & Terapkan ke Saldo Aktual';
+ saveBtn.style.opacity=saved?'.65':'1';
+ document.getElementById('simSaveStatus').textContent=saved?'Hasil simulasi sudah diterapkan ke rekening dan saldo aktual. Klik Reset Simulasi untuk membuat simulasi hari berikutnya.':'';
+}
+function renderNextDaySimulation(){
+ if(activeSimulationSaved&&activeSimulationSnapshot){
+   const snap=activeSimulationSnapshot;
+   document.getElementById('simulationDate').textContent=new Date(snap.date+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+   document.getElementById('simOpeningValue').textContent=money(snap.openingBalance);
+   document.getElementById('simDepositValue').textContent=money(snap.deposit);
+   document.getElementById('simCashOpeningValue').textContent=money(snap.cashOpening);
+   document.getElementById('simClosingValue').textContent=money(snap.closingBalance);
+   document.getElementById('simCashClosingValue').textContent=money(snap.cashClosing);
+   document.getElementById('simDifferenceValue').textContent=money(snap.difference);
+   document.getElementById('simDifference').textContent='Selisih kas: '+(snap.difference>0?'+':'')+money(snap.difference);
+   return;
+ }
+ const result=calculateNextDaySimulation();
+ const dateLabel=new Date(result.date+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+ document.getElementById('simulationDate').textContent=dateLabel;
+ document.getElementById('simOpeningValue').textContent=money(result.openingBalance);
+ document.getElementById('simDepositValue').textContent=money(result.deposit);
+ document.getElementById('simCashOpeningValue').textContent=money(result.cashOpening);
+ document.getElementById('simClosingValue').textContent=money(result.closingBalance);
+ document.getElementById('simCashClosingValue').textContent=money(result.cashClosing);
+ document.getElementById('simDifferenceValue').textContent=money(result.difference);
+ document.getElementById('simDifference').textContent='Selisih kas: '+(result.difference>0?'+':'')+money(result.difference);
+ const err=document.getElementById('simulationError');
+ if(result.invalidDeposit){err.textContent='Pengembalian titipan melebihi saldo titipan yang tersedia pada simulasi. Kurangi nominal pengembalian.';err.style.display='block';document.getElementById('simDepositValue').textContent='Tidak valid';document.getElementById('simCashClosingValue').textContent='Tidak valid';document.getElementById('simClosingValue').textContent='Tidak valid';document.getElementById('saveSimulationBtn').disabled=true;}
+ else{err.textContent='';err.style.display='none';document.getElementById('saveSimulationBtn').disabled=false;}
+ document.getElementById('saveSimulationBtn').style.opacity=result.invalidDeposit?'.55':'1';
+ document.getElementById('saveSimulationBtn').textContent='✓ Simpan & Terapkan ke Saldo Aktual';
+ document.getElementById('simSaveStatus').textContent='';
+}
+function saveNextDaySimulation(){
+ if(activeSimulationSaved)return;
+ const result=calculateNextDaySimulation();
+ if(result.invalidDeposit){
+   renderNextDaySimulation();
+   alert('Simulasi belum dapat diterapkan karena pengembalian titipan melebihi saldo titipan.');
+   return;
+ }
+ const account=document.getElementById('simAccount').value||'UANG CASH';
+ if(!ACCOUNTS.includes(account)){
+   alert('Pilih rekening yang valid untuk menerapkan hasil simulasi.');
+   return;
+ }
+ const dateValue=result.date+'T12:00';
+ const dateLabel=new Date(result.date+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+ const note='Penyesuaian hasil simulasi '+dateLabel;
+
+ // Terapkan proyeksi pendapatan/pengeluaran sebagai mutasi riil pada rekening pilihan.
+ if(result.income>0) addMove(account,result.income,'Pendapatan simulasi','Pendapatan Simulasi',note,dateValue);
+ if(result.expense>0) addMove(account,-result.expense,'Pengeluaran simulasi','Pengeluaran Simulasi',note,dateValue);
+
+ // Terapkan perubahan titipan pada buku saldo titipan DAN mutasi rekening.
+ // Dengan demikian jumlah saldo tersedia dan saldo titipan tetap saling cocok.
+ const depositName='Penyesuaian Simulasi';
+ if(result.depositIn>0){
+   addMove(account,result.depositIn,'Saldo titipan masuk: '+depositName,'Titipan Masuk',note,dateValue);
+   deposits.push({date:dateValue,name:depositName,type:'in',account,amount:result.depositIn,note});
+ }
+ if(result.depositOut>0){
+   addMove(account,-result.depositOut,'Pengembalian saldo titipan: '+depositName,'Pengembalian Titipan',note,dateValue);
+   deposits.push({date:dateValue,name:depositName,type:'out',account,amount:result.depositOut,note});
+ }
+
+ const saved={date:result.date,openingBalance:result.openingBalance,depositAtStart:baseDepositOpeningForSimulation(),closingBalance:result.closingBalance,deposit:result.deposit,cashOpening:result.cashOpening,cashClosing:result.cashClosing,income:result.income,expense:result.expense,difference:result.difference,available:result.available,account,applied:true};
+ const existingIndex=savedSimulations.findIndex(x=>x.date===result.date);
+ if(existingIndex>=0)savedSimulations[existingIndex]=saved;else savedSimulations.push(saved);
+ activeSimulationSnapshot=saved;
+ setSimulationSavedState(true);
+ refresh();
+ alert('Simulasi berhasil diterapkan. Total Saldo Tersedia, saldo rekening, saldo titipan, dan tabel Sesi Akhir sudah diperbarui.');
+}
+function resetNextDaySimulation(){
+ ['simIncome','simExpense','simDepositIn','simDepositOut'].forEach(id=>document.getElementById(id).value='');
+ activeSimulationSnapshot=null;
+ setSimulationSavedState(false);
+ renderNextDaySimulation();
+}
+['simIncome','simExpense','simDepositIn','simDepositOut'].forEach(id=>{
+ document.getElementById(id).addEventListener('input',()=>{if(!activeSimulationSaved)renderNextDaySimulation();});
+});
+document.getElementById('simAccount').addEventListener('change',()=>{if(!activeSimulationSaved)renderNextDaySimulation();});
+function renderDeposits(){
+ const total=deposits.reduce((sum,d)=>sum+depositMovementValue(d),0);
+ const incoming=deposits.filter(d=>d.type==='opening'||d.type==='in').reduce((sum,d)=>sum+d.amount,0);
+ const returned=deposits.filter(d=>d.type==='out').reduce((sum,d)=>sum+d.amount,0);
+ const names=[...new Set(deposits.map(d=>d.name))];
+ const currentNames=names.filter(name=>depositBalanceForName(name)>0);
+ document.getElementById('depositTotal').textContent=money(total);
+ document.getElementById('depositInTotal').textContent=money(incoming);
+ document.getElementById('depositOutTotal').textContent=money(returned);
+ document.getElementById('depositCustomers').textContent=currentNames.length;
+ const rows=names.map(name=>{
+   const mine=deposits.filter(d=>d.name.toLowerCase()===name.toLowerCase());
+   const inn=mine.filter(d=>d.type==='opening'||d.type==='in').reduce((sum,d)=>sum+d.amount,0);
+   const out=mine.filter(d=>d.type==='out').reduce((sum,d)=>sum+d.amount,0);
+   return {name,inn,out,balance:inn-out};
+ }).filter(x=>x.inn||x.out).sort((a,b)=>a.name.localeCompare(b.name));
+ document.getElementById('depositCustomerTable').innerHTML=rows.map(r=>`<tr><td><b>${r.name}</b></td><td>${money(r.inn)}</td><td>${money(r.out)}</td><td class="${r.balance>0?'positive':'muted'}">${money(r.balance)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">Belum ada saldo titipan.</td></tr>';
+ document.getElementById('depositTable').innerHTML=deposits.slice().reverse().map(d=>{
+   const label=d.type==='opening'?'Titipan Awal':d.type==='in'?'Titipan Masuk':'Pengembalian Titipan';
+   const cls=d.type==='out'?'negative':'positive';
+   return `<tr><td>${dateText(d.date)}</td><td>${d.name}</td><td>${label}</td><td>${d.account||'—'}</td><td class="${cls}">${d.type==='out'?'-':''}${money(d.amount)}</td><td>${d.note||'—'}</td></tr>`;
+ }).join('')||'<tr><td colspan="6" class="empty">Belum ada catatan titipan.</td></tr>';
+}
+
+function renderAccountControls(){
+ document.getElementById('minimumBalanceTable').innerHTML=ACCOUNTS.map(a=>{const b=balance(a),m=minimumBalances[a]||0,low=m>0&&b<m;return `<tr><td>${a}</td><td>${money(b)}</td><td>${money(m)}</td><td><span class="pill ${low?'red':'blue'}">${low?'Di bawah batas':'Aman'}</span></td></tr>`}).join('');
+ document.getElementById('reconciliationTable').innerHTML=ACCOUNTS.map(a=>{const sys=balance(a),actual=actualBalances[a],diff=actual===undefined?null:actual-sys;return `<tr><td>${a}</td><td>${money(sys)}</td><td><input class="money-input actual-balance-input" data-account="${a}" value="${actual===undefined?'':formatMoneyInput(actual)}" placeholder="Isi aktual" style="width:120px;padding:7px;border:1px solid var(--line);border-radius:8px"></td><td class="${diff===null?'muted':diff===0?'positive':'negative'}">${diff===null?'—':(diff>0?'+':'')+money(diff)}</td></tr>`}).join('');
+ const filled=ACCOUNTS.filter(a=>actualBalances[a]!==undefined);const sum=filled.reduce((n,a)=>n+actualBalances[a]-balance(a),0);document.getElementById('reconciliationStatus').textContent=filled.length?`${filled.length} dari ${ACCOUNTS.length} rekening diperiksa. Total selisih pada rekening yang diisi: ${sum>0?'+':''}${money(sum)}.`:'Isi saldo aktual untuk memulai rekonsiliasi.';
+ document.querySelectorAll('.actual-balance-input').forEach(el=>el.addEventListener('change',()=>{const a=el.dataset.account;if(el.value.trim()==='')delete actualBalances[a];else actualBalances[a]=parseMoney(el.value);persistData();renderAccountControls()}));
+}
+function saveMinimumBalances(){ACCOUNTS.forEach(a=>minimumBalances[a]=parseMoney(document.getElementById('min-'+a).value));persistData();refresh();alert('Batas saldo minimum berhasil disimpan.');}
+function buildMinimumSettings(){document.getElementById('minimumBalanceSettings').innerHTML=ACCOUNTS.map(a=>`<div class="field"><label>${a}</label><input id="min-${a}" class="money-input" inputmode="numeric" value="${formatMoneyInput(minimumBalances[a]||0)}" placeholder="0 = nonaktif"></div>`).join('');}
+const DATA_KEYS=['opening','openingConfigured','openingDate','balanceAmountVisible','ledger','transactions','debts','payments','operations','transfers','fees','sales','deposits','savedSimulations','physicalCashByDate','minimumBalances','actualBalances'];
+function persistData(){try{const data={opening,openingConfigured,openingDate,balanceAmountVisible,ledger,transactions,debts,payments,operations,transfers,fees,sales,deposits,savedSimulations,physicalCashByDate,minimumBalances,actualBalances};localStorage.setItem('kasAgenBrilinkData_v119',JSON.stringify(data));}catch(e){console.warn('Penyimpanan lokal gagal',e)}}
+function restoreData(data){if(!data||typeof data!=='object')throw new Error('Format backup tidak valid.');DATA_KEYS.forEach(k=>{if(data[k]!==undefined){if(k==='opening')opening=data[k];else if(k==='openingConfigured')openingConfigured=data[k];else if(k==='openingDate')openingDate=data[k];else if(k==='balanceAmountVisible')balanceAmountVisible=data[k];else if(k==='ledger')ledger=data[k];else if(k==='transactions')transactions=data[k];else if(k==='debts')debts=data[k];else if(k==='payments')payments=data[k];else if(k==='operations')operations=data[k];else if(k==='transfers')transfers=data[k];else if(k==='fees')fees=data[k];else if(k==='sales')sales=data[k];else if(k==='deposits')deposits=data[k];else if(k==='savedSimulations')savedSimulations=data[k];else if(k==='physicalCashByDate')Object.assign(physicalCashByDate,data[k]);else if(k==='minimumBalances')minimumBalances=data[k];else if(k==='actualBalances')actualBalances=data[k];}});}
+function exportBackup(){const data={app:'Kas Agen BRILink',version:'1.19',exportedAt:new Date().toISOString(),opening,openingConfigured,openingDate,balanceAmountVisible,ledger,transactions,debts,payments,operations,transfers,fees,sales,deposits,savedSimulations,physicalCashByDate,minimumBalances,actualBalances};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='backup-kas-agen-brilink-'+dateKeyLocal()+'.json';a.click();URL.revokeObjectURL(url);document.getElementById('backupStatus').textContent='Backup berhasil dibuat. Simpan file JSON tersebut di tempat aman.';}
+function importBackup(event){const file=event.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!confirm('Pulihkan data dari file ini? Data yang sedang terbuka akan diganti.'))return;restoreData(data);persistData();buildSettings();buildMinimumSettings();setDefaults();refresh();document.getElementById('backupStatus').textContent='Data berhasil dipulihkan dari '+file.name;alert('Pemulihan data berhasil.');}catch(err){alert('File backup tidak dapat dibaca: '+err.message)}event.target.value='';};reader.readAsText(file);}
+function loadLocalData(){try{const raw=localStorage.getItem('kasAgenBrilinkData_v119');if(raw)restoreData(JSON.parse(raw));}catch(e){console.warn('Data lokal tidak dapat dipulihkan',e)}}
+
+function refresh(){
+ renderAccounts('balanceAccounts');renderTables();renderDebts();renderDeposits();renderSession();renderAccountControls();persistData();if(document.getElementById('nextDaySimulation').style.display!=='none')renderNextDaySimulation();
+ const total=ACCOUNTS.reduce((s,a)=>s+balance(a),0),today=new Date().toDateString();
+ const todayLedger=ledger.filter(x=>new Date(x.date).toDateString()===today);
+ document.getElementById('dashTotal').textContent=money(total);
+ document.getElementById('dashIncome').textContent=money(todayLedger.filter(x=>x.amount>0).reduce((s,x)=>s+x.amount,0));
+ document.getElementById('dashExpense').textContent=money(-todayLedger.filter(x=>x.amount<0).reduce((s,x)=>s+x.amount,0));
+ document.getElementById('dashCount').textContent=transactions.filter(t=>new Date(t.date).toDateString()===today).length+operations.filter(t=>new Date(t.date).toDateString()===today).length;
+ latestAvailableBalance=total;renderBalanceVisibility();document.getElementById('balanceDebt').textContent=money(allDebtTotals().remaining);document.getElementById('balanceMutations').textContent=ledger.length;
+ document.getElementById('trxCount').textContent=transactions.length;document.getElementById('trxNominal').textContent=money(transactions.reduce((s,t)=>s+t.amount,0));document.getElementById('trxBankFee').textContent=money(transactions.reduce((s,t)=>s+t.bankFee,0));document.getElementById('trxAgentFee').textContent=money(transactions.reduce((s,t)=>s+t.agentFee,0));
+ const ins=operations.filter(x=>x.type==='in').reduce((s,x)=>s+x.amount,0),outs=operations.filter(x=>x.type==='out').reduce((s,x)=>s+x.amount,0);
+ document.getElementById('opsIn').textContent=money(ins);document.getElementById('opsOut').textContent=money(outs);document.getElementById('opsNet').textContent=money(ins-outs);document.getElementById('opsCount').textContent=operations.length;
+ document.getElementById('feeTotal').textContent=money(fees.reduce((s,x)=>s+x.amount,0));document.getElementById('feeCount').textContent=fees.length;document.getElementById('feeBankTotal').textContent=money(fees.filter(x=>x.type==='Fee Bank').reduce((s,x)=>s+x.amount,0));document.getElementById('feeAgentTotal').textContent=money(fees.filter(x=>x.type==='Fee Agen').reduce((s,x)=>s+x.amount,0));
+ const sumType=t=>sales.filter(x=>x.type===t).reduce((s,x)=>s+x.amount,0);
+ document.getElementById('salesTotal').textContent=money(sales.reduce((s,x)=>s+x.amount,0));document.getElementById('salesIce').textContent=money(sumType('Es Cream'));document.getElementById('salesShop').textContent=money(sumType('Kedai'));document.getElementById('salesCig').textContent=money(sumType('Rokok'));
+ const totalIn=ledger.filter(x=>x.amount>0).reduce((s,x)=>s+x.amount,0),totalOut=-ledger.filter(x=>x.amount<0).reduce((s,x)=>s+x.amount,0);
+ document.getElementById('reportIn').textContent=money(totalIn);document.getElementById('reportOut').textContent=money(totalOut);document.getElementById('reportNet').textContent=money(totalIn-totalOut);document.getElementById('reportSales').textContent=money(sales.reduce((s,x)=>s+x.amount,0));
+ document.getElementById('reportAccounts').innerHTML=ACCOUNTS.map(a=>`<tr><td>${a}</td><td>${money(balance(a))}</td><td>${money(ledger.filter(x=>x.account===a).reduce((s,x)=>s+Math.abs(x.amount),0))}</td></tr>`).join('');
+ const recent=ledger.slice().reverse().slice(0,6);document.getElementById('recentTransactions').innerHTML=recent.length?recent.map(x=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #edf0f5;font-size:11px"><span><b>${x.source}</b><br><small class="muted">${x.account} · ${dateText(x.date)}</small></span><b class="${x.amount>=0?'positive':'negative'}">${money(x.amount)}</b></div>`).join(''):'Belum ada transaksi yang tercatat.';
+}
+function updateHistory(rows){
+ const ins=rows.filter(x=>x.amount>0).reduce((s,x)=>s+x.amount,0),outs=-rows.filter(x=>x.amount<0).reduce((s,x)=>s+x.amount,0);
+ document.getElementById('historyCount').textContent=rows.length;document.getElementById('historyNominal').textContent=money(rows.reduce((s,x)=>s+Math.abs(x.amount),0));document.getElementById('historyIn').textContent=money(ins);document.getElementById('historyOut').textContent=money(outs);
+ document.getElementById('historyTable').innerHTML=rows.map(x=>`<tr><td>${dateText(x.date)}</td><td>${x.type}</td><td>${x.source}${x.detail?' — '+x.detail:''}</td><td>${x.account}</td><td>${money(Math.abs(x.amount))}</td><td class="${x.amount>=0?'positive':'negative'}">${x.amount>=0?'Masuk':'Keluar'}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">Tidak ada transaksi sesuai filter.</td></tr>';
+}
+function searchHistory(){
+ const from=document.getElementById('historyFrom').value,to=document.getElementById('historyTo').value,acc=document.getElementById('historyAccount').value,type=document.getElementById('historyType').value;
+ let rows=ledger.filter(x=>(!acc||x.account===acc)&&(!type||x.type===type)&&(!from||x.date.slice(0,10)>=from)&&(!to||x.date.slice(0,10)<=to));
+ updateHistory(rows.slice().reverse());
+}
+function resetHistory(){['historyFrom','historyTo','historyAccount','historyType'].forEach(id=>document.getElementById(id).value='');searchHistory()}
+document.getElementById('trxService').addEventListener('change',e=>{
+ const v=e.target.value,bank=document.getElementById('bankFeeField'),agent=document.getElementById('agentFeeField');
+ if(v==='Tarik Tunai'){bank.style.display='none';agent.style.display='flex';document.getElementById('trxBankFeeInput').value=0;document.getElementById('feeHint').textContent='Tarik Tunai: masukkan Admin Agen.'}
+ else if(v){bank.style.display='flex';agent.style.display='flex';document.getElementById('feeHint').textContent='Layanan ini menampilkan Admin Bank dan Admin Agen.'}
+ else{bank.style.display='flex';agent.style.display='flex';document.getElementById('feeHint').textContent='Pilih jenis layanan untuk menampilkan kolom biaya yang sesuai.'}
+});
+document.getElementById('transactionForm').addEventListener('submit',e=>{
+ e.preventDefault();const service=trxService.value,amount=parseMoney(trxAmount.value),account=trxAccount.value,bankFee=parseMoney(trxBankFeeInput.value),agentFee=parseMoney(trxAgentFeeInput.value);
+ const t={date:trxDate.value,service,amount,account,bankFee,agentFee,note:trxNote.value};transactions.push(t);
+ // Prototype: transaksi dicatat sebagai aktivitas; arah debit/kredit layanan harus dikonfirmasi sebelum produksi.
+ addMove(account,0,'Transaksi Agen: '+service,'Catatan transaksi',t.note,t.date);
+ if(agentFee)addMove(account,agentFee,'Fee Agen transaksi','Pemasukan fee','',t.date);
+ if(bankFee)addMove(account,bankFee,'Fee Bank transaksi','Pemasukan fee','',t.date);
+ e.target.reset();setDefaults();refresh();alert('Transaksi berhasil dicatat pada prototype. Pergerakan pokok saldo layanan perlu konfigurasi alur debit/kredit sebelum digunakan secara nyata.');
+});
+document.getElementById('debtForm').addEventListener('submit',e=>{
+ e.preventDefault();const d={id:Date.now()+Math.random(),date:debtDate.value,name:debtName.value.trim(),account:debtAccount.value,service:debtService.value,amount:parseMoney(debtAmount.value),dueDate:document.getElementById('debtDueDate').value,note:debtNote.value};debts.push(d);
+ // Hutang adalah piutang: tidak menambah saldo kas sampai pelanggan membayar.
+ e.target.reset();setDefaults();refresh();alert('Catatan hutang berhasil disimpan.');
+});
+document.getElementById('paymentForm').addEventListener('submit',e=>{
+ e.preventDefault();const id=+payDebtId.value,d=debts.find(x=>x.id===id),amount=parseMoney(payAmount.value),paid=payments.filter(x=>x.debtId===id).reduce((s,x)=>s+x.amount,0);
+ if(!d||amount>d.amount-paid){alert('Jumlah pembayaran melebihi sisa hutang.');return}
+ payments.push({debtId:id,date:payDate.value,amount,account:payAccount.value});addMove(payAccount.value,amount,'Pembayaran hutang '+d.name,'Pembayaran Hutang','',payDate.value);
+ e.target.reset();setDefaults();refresh();alert('Pembayaran hutang berhasil dicatat.');
+});
+document.getElementById('opsForm').addEventListener('submit',e=>{
+ e.preventDefault();const o={date:opsDate.value,account:opsAccount.value,type:opsType.value,category:opsCategory.value,amount:parseMoney(opsAmount.value),note:opsNote.value};operations.push(o);addMove(o.account,o.type==='in'?o.amount:-o.amount,'Operasional: '+o.category,o.type==='in'?'Operasional Masuk':'Operasional Keluar',o.note,o.date);
+ e.target.reset();setDefaults();refresh();alert('Catatan operasional berhasil disimpan.');
+});
+document.getElementById('transferForm').addEventListener('submit',e=>{
+ e.preventDefault();const from=transferFrom.value,to=transferTo.value,amount=parseMoney(transferAmount.value),fee=parseMoney(transferFee.value);
+ if(from===to){alert('Rekening asal dan tujuan harus berbeda.');return}
+ if(balance(from)<amount+fee){alert('Saldo rekening asal tidak mencukupi.');return}
+ const t={date:transferDate.value,from,to,amount,fee};transfers.push(t);addMove(from,-(amount+fee),'Pindah saldo ke '+to,'Transfer Keluar','',t.date);addMove(to,amount,'Pindah saldo dari '+from,'Transfer Masuk','',t.date);if(fee)addMove(from,-fee,'Biaya admin pindah saldo','Biaya Admin','',t.date);
+ e.target.reset();setDefaults();refresh();alert('Pindah saldo berhasil dicatat.');
+});
+document.getElementById('feeForm').addEventListener('submit',e=>{
+ e.preventDefault();const f={date:feeDate.value,type:feeType.value,amount:parseMoney(feeAmount.value),account:feeAccount.value,note:feeNote.value};fees.push(f);addMove(f.account,f.amount,f.type,'Pemasukan Fee',f.note,f.date);
+ e.target.reset();setDefaults();refresh();alert('Fee berhasil dicatat.');
+});
+document.getElementById('salesForm').addEventListener('submit',e=>{
+ e.preventDefault();const s={date:salesDate.value,type:salesType.value,amount:parseMoney(salesAmount.value),account:salesAccount.value,note:salesNote.value};sales.push(s);addMove(s.account,s.amount,'Penjualan Warung: '+s.type,'Penjualan',s.note,s.date);
+ e.target.reset();setDefaults();refresh();alert('Penjualan berhasil dicatat.');
+});
+function openOpeningModal(){
+ buildSettings();
+ document.getElementById('openingModalTitle').textContent=openingConfigured?'Perbarui Saldo Awal':'Input Saldo Awal Pertama';
+ document.getElementById('openingSubmitBtn').textContent=openingConfigured?'Simpan Perubahan':'Simpan Saldo Awal';
+ document.getElementById('openingModal').classList.add('show');document.body.style.overflow='hidden';
+}
+function closeOpeningModal(){document.getElementById('openingModal').classList.remove('show');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOpeningModal()});
+document.getElementById('settingsForm').addEventListener('submit',e=>{
+ e.preventDefault();ACCOUNTS.forEach(a=>{const v=document.getElementById('opening-'+a).value;opening[a]=parseMoney(v)});if(!openingConfigured)openingDate=dateKeyLocal();openingConfigured=true;document.getElementById('openOpeningModalBtn').textContent='✎ Ubah Saldo Awal';closeOpeningModal();refresh();alert('Saldo awal berhasil disimpan dan menjadi dasar perhitungan saldo.');
+});
+function buildSettings(){document.getElementById('openingBalanceFields').innerHTML=ACCOUNTS.map(a=>`<div class="field"><label>${a}</label><input id="opening-${a}" type="text" inputmode="numeric" autocomplete="off" class="money-input" value="${formatMoneyInput(opening[a])}" placeholder="Saldo awal Rp"></div>`).join('')}
+document.getElementById('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){showPage('riwayat');document.getElementById('historyType').value='';searchHistory()}});
+document.getElementById('depositForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const date=depositDate.value,name=depositName.value.trim(),type=depositType.value,account=depositAccount.value,amount=parseMoney(depositAmount.value),note=depositNote.value.trim();
+ if(amount<=0){alert('Nominal saldo titipan harus lebih dari Rp0.');return;}
+ if(type==='out'&&amount>depositBalanceForName(name)){
+   alert('Pengembalian melebihi saldo titipan milik pelanggan tersebut.');return;
+ }
+ if(type==='in')addMove(account,amount,'Saldo titipan masuk: '+name,'Titipan Masuk',note,date);
+ if(type==='out')addMove(account,-amount,'Pengembalian saldo titipan: '+name,'Pengembalian Titipan',note,date);
+ deposits.push({date,name,type,account,amount,note});
+ e.target.reset();setDefaults();refresh();alert('Catatan saldo titipan berhasil disimpan.');
+});
+loadLocalData();setDefaults();buildSettings();buildMinimumSettings();refresh();searchHistory();
+</script>
+</body>
+</html>
