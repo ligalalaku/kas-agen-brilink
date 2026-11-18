@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b9eaff"/><stop offset=".48" stop-color="#edfaff"/><stop offset="1" stop-color="#b3e6ff"/></linearGradient>
+ <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#0878ee"/><stop offset=".45" stop-color="#00b9ff"/><stop offset="1" stop-color="#082acb"/></linearGradient>
+ <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fff" stop-opacity=".15"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity=".12"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#d8f3ff" stop-opacity="0"/></radialGradient>
+ <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.3" fill="#19b9f5" opacity=".23"/></pattern>
+</defs>
+<rect width="1600" height="1000" fill="url(#bg)"/>
+<ellipse cx="760" cy="490" rx="850" ry="480" fill="url(#glow)"/>
+<!-- upper luminous flowing ribbons -->
+<path d="M-80 185 C220 320 380 255 610 135 S1120 -30 1680 48 L1680 155 C1190 60 1010 160 760 260 S240 390 -80 270Z" fill="url(#wave)"/>
+<path d="M-60 244 C260 380 450 302 690 190 S1170 42 1660 105" fill="none" stroke="#fff" stroke-width="17" opacity=".82"/>
+<path d="M-40 278 C270 414 470 330 720 218 S1200 75 1660 140" fill="none" stroke="#36d8ff" stroke-width="5" opacity=".95"/>
+<path d="M-70 300 C250 450 480 355 735 250 S1210 110 1660 175" fill="none" stroke="#082acb" stroke-width="13" opacity=".7"/>
+<!-- lower waves -->
+<path d="M-70 820 C250 700 430 820 700 850 S1170 780 1670 625 L1670 1050H-70Z" fill="#0878e8"/>
+<path d="M-70 810 C250 690 430 790 700 820 S1170 750 1670 600" fill="none" stroke="#fff" stroke-width="18" opacity=".9"/>
+<path d="M-70 850 C250 730 430 835 700 865 S1170 795 1670 645" fill="none" stroke="#00c8ff" stroke-width="7"/>
+<path d="M-70 900 C250 780 450 890 720 910 S1200 840 1670 700" fill="none" stroke="#072fc9" stroke-width="28" opacity=".85"/>
+<path d="M-70 925 C250 805 450 915 720 935 S1200 865 1670 725" fill="none" stroke="#fff" stroke-width="4" opacity=".8"/>
+<!-- ornamental flourishes -->
+<g fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" opacity=".42">
+ <path d="M-40 70 C70 5 140 45 120 105 C100 160 25 140 45 90 C65 50 115 65 100 100"/>
+ <path d="M20 20 C100 90 180 5 230 65 C270 115 210 165 175 125 C145 90 185 65 210 90"/>
+ <path d="M190 0 C220 75 300 75 315 130 C330 180 275 205 245 165 C220 130 255 110 278 133"/>
+ <path d="M1450 370 C1370 310 1300 360 1325 425 C1350 485 1420 460 1390 410 C1365 370 1325 390 1345 425"/>
+ <path d="M1600 300 C1510 390 1435 300 1380 365 C1340 415 1395 470 1435 425 C1470 385 1430 360 1408 390"/>
+ <path d="M1600 510 C1510 450 1450 505 1470 565 C1490 620 1560 600 1535 550 C1515 515 1475 530 1490 560"/>
+</g>
+<rect x="1060" y="550" width="540" height="310" fill="url(#dots)" opacity=".9"/>
+<rect width="1600" height="1000" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="4"/>
+</svg>
