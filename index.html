@@ -8,12 +8,12 @@
 <style>
 :root{
   --navy:#17345f;--navy2:#244b7c;--blue:#3978d7;--gold:#f4c84a;
-  --bg:#f3f6fc;--white:#fff;--text:#172b49;--muted:#718096;
-  --line:#e5eaf2;--green:#159957;--red:#dc4545;--shadow:0 8px 24px rgba(20,43,79,.08);
+  --bg:#0c1b33;--white:#fff;--text:#172b49;--muted:#718096;
+  --line:#263b5b;--green:#159957;--red:#dc4545;--shadow:0 8px 24px rgba(3,10,25,.18);
   --radius:16px;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text)}
+body{margin:0;background:linear-gradient(135deg,#0b1730 0%,#102746 52%,#09162c 100%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);background-attachment:fixed}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 .app{min-height:100vh}
@@ -47,7 +47,7 @@ button{cursor:pointer}
 .page{display:none;animation:fade .22s ease}.page.active{display:block}
 @keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
 .page-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px}
-.page-title h1{font-size:22px;margin:0 0 5px;letter-spacing:-.4px}.page-title p{margin:0;color:var(--muted);font-size:12px}
+.page-title h1{font-size:22px;margin:0 0 5px;letter-spacing:-.4px;color:#f3f6ff}.page-title p{margin:0;color:#b5c3d9;font-size:12px}
 .btn{border:0;border-radius:10px;padding:10px 15px;font-size:12px;font-weight:750;display:inline-flex;align-items:center;gap:7px}
 .btn-primary{background:linear-gradient(110deg,#173966,#24569a);color:white;box-shadow:0 5px 12px rgba(26,68,123,.16)}
 .btn-gold{background:linear-gradient(110deg,#ffe17a,#efbd39);color:#192b49}
